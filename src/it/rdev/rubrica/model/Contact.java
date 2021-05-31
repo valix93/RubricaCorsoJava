@@ -9,6 +9,9 @@ public class Contact {
 	private String surname;
 	private List<String> phoneNumbers;
 	private List<String> emails;
+	
+	
+	public Contact() {}
 
 	public String getName() {
 		return name;

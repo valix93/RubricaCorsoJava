@@ -1,4 +1,4 @@
-package it.rdev.rubrica.model.impl;
+package it.rdev.rubrica.model.impl.rdbms;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

@@ -1,4 +1,4 @@
-package it.rdev.rubrica.model.impl;
+package it.rdev.rubrica.model.impl.rdbms;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 import it.rdev.rubrica.model.DAO;
 
-public abstract class AbstractDAO implements DAO {
+public abstract class AbstractDAO<T> implements DAO<T> {
 	
 	protected ResultSet executeQuery(String query) throws SQLException {
 		return DataSource.getInstance().getConnection().createStatement().executeQuery(query);

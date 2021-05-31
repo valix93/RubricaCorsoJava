@@ -1,3 +1,13 @@
 package it.rdev.rubrica.model;
 
-public interface DAO { }
+import java.sql.SQLException;
+
+public interface DAO<T> {
+	
+	boolean persist(T t) throws SQLException;
+	
+	boolean delete(T t) throws SQLException;
+	
+	boolean update(T t) throws SQLException;
+	
+}
