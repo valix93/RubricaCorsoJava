@@ -1,6 +1,7 @@
 package it.rdev.rubrica;
 
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
 
 import it.rdev.rubrica.controller.RubricaController;
@@ -8,37 +9,74 @@ import it.rdev.rubrica.model.Contact;
 import it.rdev.rubrica.ui.AppFrame;
 
 public class RubricaApp {
+	static RubricaController rb = new RubricaController();
+
+	static Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] strings) {
+		//menu();
+		Set<String> emails = new HashSet<String>();
+		Set<String> phones = new HashSet<String>();
+		String nome = "Anna";
+		String cognome="Nanni";
+		String email = nome+cognome+"@gmail.com";
+		emails.add(email);
+		phones.add("3333333333");
+		creaNuovoContattoRandom(nome, cognome, emails, phones);
+		emails.removeAll(emails);
+		phones.removeAll(phones);
+		nome = "Bruno";
+		cognome = "Barbieri";
+		email = nome+cognome+"@gmail.com";
+		emails.add(email);
+		phones.add("320320320320");
+		creaNuovoContattoRandom(nome, cognome, emails, phones);
 		new AppFrame().setVisible(true);
-		Set<String> phone_numbersO1 = new HashSet<String>();
-		phone_numbersO1.add("3344334433");
-		Set<String> phone_numbersO2 = new HashSet<String>();
-		phone_numbersO2.add("3333333333");
 
-		Set<String> emailsO1 = new HashSet<String>();
-		Set<String> emailsO2 = new HashSet<String>();
+	}
+	
+	public static void menu(){
+		int scelta = -1;
+		do {
+			System.out.println("********* Menù *********");
+			System.out.println("1. inserisci contatto");
+			System.out.println("Digita 0 per uscire");
+			System.out.print("Scegli una voce del menù: ");
+			scelta = scanner.nextInt();
+			if (scelta == 1) creaNuovoContatto();
+			else if (scelta!=0) System.out.println("Scelta non valida");
+		} while (scelta!=0);
+	}
 
-		emailsO1.add("giuseppe.garibaldi@email.it");
-		emailsO2.add("pippo.franco@email.it");
-
-		Contact o1 = new Contact()
-					.setName("Giuseppe")
-					.setSurname("Garibaldi")
-					.setPhoneNumbers(phone_numbersO1)
-					.setEmails(emailsO1);
-		
-		Contact o2 = new Contact()
-				.setName("Pippo")
-				.setSurname("Franco")
-				.setPhoneNumbers(phone_numbersO2)
-				.setEmails(emailsO2);
-
-		// TODO contatti da scanner
-		RubricaController rb = new RubricaController();
-		
-		rb.addContact(o1);
-		rb.addContact(o2);
+	private static void creaNuovoContatto() {
+		System.out.println("Inserisci un nuovo contatto");
+		Contact contatto = new Contact();
+		Set<String> emails = new HashSet<String>();
+		Set<String> phones = new HashSet<String>();
+		System.out.print("Nome: ");
+		String nome = scanner.next();
+		System.out.print("Cognome: ");
+		String cognome = scanner.next();
+		System.out.print("Numero di telefono: ");
+		String numero = scanner.next();
+		phones.add(numero);
+		System.out.print("Email: ");
+		String email = scanner.next();
+		emails.add(email);
+		contatto.setName(nome);
+		contatto.setSurname(cognome);
+		contatto.setPhoneNumbers(phones);
+		contatto.setEmails(emails);
+		rb.addContact(contatto);
+	}
+	
+	public static void creaNuovoContattoRandom(String nome, String cognome, Set<String> emails, Set<String> phones) {
+		Contact contatto = new Contact();
+		contatto.setName(nome);
+		contatto.setSurname(cognome);
+		contatto.setEmails(emails);
+		contatto.setPhoneNumbers(phones);
+		rb.addContact(contatto);
 	}
 	
 }
