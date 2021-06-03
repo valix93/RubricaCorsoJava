@@ -8,6 +8,7 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 
+import it.rdev.rubrica.controller.RubricaController;
 import it.rdev.rubrica.model.Contact;
 
 public class ContactListTableModel extends AbstractTableModel {
@@ -21,9 +22,11 @@ public class ContactListTableModel extends AbstractTableModel {
     private static final Class<?>[] COLUMN_TYPES = new Class<?>[] {Integer.class, String.class, String.class, JButton.class,  JButton.class};
     
     private List<Contact> contacts;
+    private RubricaController controller;
     
-    public ContactListTableModel(List<Contact> contacts) {
+    public ContactListTableModel(List<Contact> contacts, RubricaController controller) {
     	this.contacts = contacts;
+    	this.controller = controller;
     }
     
 	@Override
@@ -52,15 +55,17 @@ public class ContactListTableModel extends AbstractTableModel {
         case 0: return contacts.get(rowIndex).getId();
         case 1: return contacts.get(rowIndex).getName();
         case 2: return contacts.get(rowIndex).getSurname();
-        case 3: final JButton btnRemove = new JButton(COLUMN_NAMES[columnIndex]);
+        case 4: final JButton btnRemove = new JButton(COLUMN_NAMES[columnIndex]);
         		btnRemove.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent arg0) {
-                        JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(btnRemove), 
-                                "Richiesto dettaglio contatto con ID <"+contacts.get(rowIndex).getId() + ">");
+                    	if( controller.removeContact(contacts.get(rowIndex)) ) {
+                    		contacts.remove(contacts.get(rowIndex));
+                    		fireTableDataChanged();
+                    	}
                     }
                 });
                 return btnRemove;
-        case 4: final JButton btnDetail = new JButton(COLUMN_NAMES[columnIndex]);
+        case 3: final JButton btnDetail = new JButton(COLUMN_NAMES[columnIndex]);
 		        btnDetail.addActionListener(new ActionListener() {
 		            public void actionPerformed(ActionEvent arg0) {
 		                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(btnDetail), 

@@ -5,14 +5,14 @@ import java.util.List;
 
 import it.rdev.rubrica.model.Contact;
 import it.rdev.rubrica.model.ContactDAO;
-import it.rdev.rubrica.model.impl.rdbms.ContactDAOImpl;
+import it.rdev.rubrica.model.impl.DaoManager;
 
 public class RubricaController {
 	
 	private ContactDAO dao;
 	
 	public RubricaController() {
-		dao = new ContactDAOImpl();
+		dao = DaoManager.createContactDAO();
 	}
 
 	public List<Contact> getContactList() {
@@ -21,9 +21,6 @@ public class RubricaController {
 	
 	public String addContact(Contact c) {
 		String view = "LIST";
-		// Controlli ore lavorate
-		// Controlli anagrafica
-		// altri controlli
 		try {
 			dao.persist(c);
 		} catch (SQLException e) {
@@ -31,6 +28,16 @@ public class RubricaController {
 			view = "LIST-ERROR";
 		}
 		return view;
+	}
+	
+	public boolean removeContact(Contact c) {
+		try {
+			return dao.delete(c);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 }

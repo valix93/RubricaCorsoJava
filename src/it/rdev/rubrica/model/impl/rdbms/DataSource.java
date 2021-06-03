@@ -7,7 +7,16 @@ import java.sql.SQLException;
 import it.rdev.rubrica.config.ConfigKeys;
 import it.rdev.rubrica.config.Configuration;
 
-public class DataSource {
+/**
+ * 
+ * DataSource per l'implementazione del DAO che sfrutta un sistema di persistenza relazionale RDBMS.
+ * Si tratta di un singleton con visibilità di package, in quando non ha senso il riutilizzo in
+ * un'implementazione che non prevede l'utilizzo di un RDBMS
+ * 
+ * @author Danilo Di Nuzzo
+ *
+ */
+class DataSource {
 
 	private static DataSource ds;
 	

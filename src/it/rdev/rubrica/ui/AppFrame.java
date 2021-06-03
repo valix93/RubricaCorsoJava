@@ -32,7 +32,7 @@ public class AppFrame extends JFrame {
 		this.setJMenuBar(createMenuBar());
 		
 		this.getContentPane().setLayout(new BorderLayout());
-		ContactList panel = new ContactList(controller.getContactList());
+		ContactList panel = new ContactList(controller.getContactList(), controller);
 		this.getContentPane().add(
 				panel
 				, BorderLayout.CENTER);
