@@ -39,5 +39,15 @@ public class RubricaController {
 		}
 		return false;
 	}
+	
+	public boolean removeContactByEmails(Contact c) {
+		try {
+			return dao.delete(c);
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return false;
+	}
 
 }

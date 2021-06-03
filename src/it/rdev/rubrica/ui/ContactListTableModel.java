@@ -68,8 +68,9 @@ public class ContactListTableModel extends AbstractTableModel {
         case 3: final JButton btnDetail = new JButton(COLUMN_NAMES[columnIndex]);
 		        btnDetail.addActionListener(new ActionListener() {
 		            public void actionPerformed(ActionEvent arg0) {
+		            	String infoContatto = contacts.get(rowIndex).toString().replace("[", "\n").replace(",", "\n").replace("]", "");
 		                JOptionPane.showMessageDialog(JOptionPane.getFrameForComponent(btnDetail), 
-		                        "Richiesta eliminazione contatto con ID <"+contacts.get(rowIndex).getId()+">");
+		                        "Dettagli contatto con ID <"+contacts.get(rowIndex).getId()+">\n" + infoContatto);
 		            }
 		        });
 		        return btnDetail;

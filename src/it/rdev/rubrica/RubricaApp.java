@@ -4,6 +4,8 @@ import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
+import it.rdev.rubrica.config.ConfigKeys;
+import it.rdev.rubrica.config.Configuration;
 import it.rdev.rubrica.controller.RubricaController;
 import it.rdev.rubrica.model.Contact;
 import it.rdev.rubrica.ui.AppFrame;
@@ -14,7 +16,7 @@ public class RubricaApp {
 	static Scanner scanner = new Scanner(System.in);
 
 	public static void main(String[] strings) {
-		//menu();
+		String persistenceType =Configuration.getInstance().getValue(ConfigKeys.PERSISTENCE_TYPE);
 		Set<String> emails = new HashSet<String>();
 		Set<String> phones = new HashSet<String>();
 		String nome = "Anna";
@@ -22,7 +24,8 @@ public class RubricaApp {
 		String email = nome+cognome+"@gmail.com";
 		emails.add(email);
 		phones.add("3333333333");
-		creaNuovoContattoRandom(nome, cognome, emails, phones);
+		creaNuovoContatto(nome, cognome, emails, phones);
+		
 		emails.removeAll(emails);
 		phones.removeAll(phones);
 		nome = "Bruno";
@@ -30,25 +33,15 @@ public class RubricaApp {
 		email = nome+cognome+"@gmail.com";
 		emails.add(email);
 		phones.add("320320320320");
-		creaNuovoContattoRandom(nome, cognome, emails, phones);
-		new AppFrame().setVisible(true);
-
+		creaNuovoContatto(nome, cognome, emails, phones);
+		//cancellaContatto(nome, cognome, emails, phones);
+		if (persistenceType.equals("RDBMS")) {
+			new AppFrame().setVisible(true);
+		}
 	}
 	
-	public static void menu(){
-		int scelta = -1;
-		do {
-			System.out.println("********* Menù *********");
-			System.out.println("1. inserisci contatto");
-			System.out.println("Digita 0 per uscire");
-			System.out.print("Scegli una voce del menù: ");
-			scelta = scanner.nextInt();
-			if (scelta == 1) creaNuovoContatto();
-			else if (scelta!=0) System.out.println("Scelta non valida");
-		} while (scelta!=0);
-	}
 
-	private static void creaNuovoContatto() {
+	/*private static void creaNuovoContattoScanner() {
 		System.out.println("Inserisci un nuovo contatto");
 		Contact contatto = new Contact();
 		Set<String> emails = new HashSet<String>();
@@ -68,9 +61,9 @@ public class RubricaApp {
 		contatto.setPhoneNumbers(phones);
 		contatto.setEmails(emails);
 		rb.addContact(contatto);
-	}
+	}*/
 	
-	public static void creaNuovoContattoRandom(String nome, String cognome, Set<String> emails, Set<String> phones) {
+	public static void creaNuovoContatto(String nome, String cognome, Set<String> emails, Set<String> phones) {
 		Contact contatto = new Contact();
 		contatto.setName(nome);
 		contatto.setSurname(cognome);
@@ -79,4 +72,13 @@ public class RubricaApp {
 		rb.addContact(contatto);
 	}
 	
+	public static void cancellaContatto(String nome, String cognome, Set<String> emails, Set<String> phones) {
+		Contact contatto = new Contact();
+		contatto.setName(nome);
+		contatto.setSurname(cognome);
+		contatto.setEmails(emails);
+		contatto.setPhoneNumbers(phones);
+		contatto.getEmails().size();
+		rb.removeContactByEmails(contatto);
+	}
 }

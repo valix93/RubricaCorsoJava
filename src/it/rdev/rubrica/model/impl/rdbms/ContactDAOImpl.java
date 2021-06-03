@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import it.rdev.rubrica.model.Contact;
 import it.rdev.rubrica.model.ContactDAO;
@@ -19,17 +20,20 @@ import it.rdev.rubrica.model.ContactDAO;
 public class ContactDAOImpl extends AbstractDAO<Contact, BigInteger> implements ContactDAO {
 	
 	private final String TABLE_NAME = "contacts";
+	private final String TABLE_EMAIL = "emails";
+	private final String TABLE_PHONE = "phones";
+
 
 	public List<Contact> getAll() {
 		List<Contact> contacts = new ArrayList<>();
 		try {
-			// Recupero tutti i record dal database ATTENZIONE: La cardinalità dei risultati sarà data dal prodotto cartesiano
+			// Recupero tutti i record dal database ATTENZIONE: La cardinalitï¿½ dei risultati sarï¿½ data dal prodotto cartesiano
 			// dei records di emails per phones per ogni contatto
 			ResultSet rs = this.executeQuery("SELECT id, name, surname, email, phone FROM " + TABLE_NAME + " c left outer join emails e on c.id = e.id_contact left outer join phones p on p.id_contact = c.id ");
 			while(rs.next()) {
 				Contact c = new Contact()
 						.setId(rs.getInt("id"));
-				// Verifico se ho giò processato questo contatto, se è in lista ne recupero il riferimento
+				// Verifico se ho giï¿½ processato questo contatto, se ï¿½ in lista ne recupero il riferimento
 				if( contacts.contains(c) ) {
 					c = contacts.get( contacts.indexOf(c) );
 				} else {
@@ -40,7 +44,7 @@ public class ContactDAOImpl extends AbstractDAO<Contact, BigInteger> implements 
 					contacts.add(c);
 				}
 				// imposto le informazioni di emails e numeri di telefono. Non mi preoccupo dei duplicati
-				// perché ho utilizzato dei TreeSet
+				// perchï¿½ ho utilizzato dei TreeSet
 				if( rs.getString("email") != null )
 					c.addEmail(rs.getString("email"));
 				if( rs.getString("phone") != null )
@@ -54,18 +58,29 @@ public class ContactDAOImpl extends AbstractDAO<Contact, BigInteger> implements 
 
 	@Override
 	public boolean persist(Contact c) throws SQLException {
-		BigInteger id = this.executeInsert(
-				"INSERT INTO " + TABLE_NAME + " (name, surname) VALUES (?, ?)",
-				c.getName(),
-				c.getSurname());
-		
-		insertEmailAndPhone(c, id.intValue());
-		
+		int idPersist = getIdFromEmail(c.getEmails());
+		if (idPersist==0) {
+			idPersist = getIdFromPhone(c.getPhoneNumbers());
+		}
+		BigInteger id = null;
+		if (idPersist==0) {
+			id = this.executeInsert(
+					"INSERT INTO " + TABLE_NAME + " (name, surname) VALUES (?, ?)",
+					c.getName(),
+					c.getSurname());
+			
+			insertEmailAndPhone(c, id.intValue());
+		}
 		return id != null;
 	}
 
 	@Override
 	public boolean delete(Contact t) throws SQLException {
+		if (t.getId()==null) {
+			int id = getIdFromEmail(t.getEmails());
+			if (id == 0) getIdFromPhone(t.getPhoneNumbers());
+			t.setId(id);
+		}
 		int rows = this.executeUpdate("DELETE FROM " + TABLE_NAME + " WHERE id = ?", t.getId());
 		return rows > 0;
 	}
@@ -85,7 +100,7 @@ public class ContactDAOImpl extends AbstractDAO<Contact, BigInteger> implements 
 		if( c.getEmails() != null ) {
 			Object[] emailsParam = new Object[c.getEmails().size() * 2];
 			Iterator<String> emailIt = c.getEmails().iterator();
-			StringBuffer sb = new StringBuffer("INSERT INTO emails VALUES ");
+			StringBuffer sb = new StringBuffer("INSERT INTO " + TABLE_EMAIL + " VALUES ");
 			for(int i = 0; i<emailsParam.length && emailIt.hasNext();) {
 				if( i > 0) {
 					sb.append(", ");
@@ -111,5 +126,33 @@ public class ContactDAOImpl extends AbstractDAO<Contact, BigInteger> implements 
 			}
 			this.executeUpdate(sb.toString(), phonesParam);
 		}
+	}
+	
+	public int getIdFromEmail(Set<String> emails) throws SQLException {
+		int id = 0;
+		boolean checkEmailsSet = !(emails==null || emails.isEmpty());
+		if (checkEmailsSet) {
+			for (String e : emails) {
+				ResultSet rows = this.executeQuery("SELECT id_contact FROM " + TABLE_EMAIL +" WHERE lower(email) LIKE lower(?)", e);
+				while (rows.next()) {
+					id = rows.getInt("id_contact");
+				}
+			}
+		}
+		return id;
+	}
+	
+	public int getIdFromPhone(Set<String> phones) throws SQLException {
+		int id = 0;
+		boolean checkPhoneSet = !(phones==null || phones.isEmpty());
+		if (checkPhoneSet) {
+			for (String p : phones) {
+				ResultSet rows = this.executeQuery("SELECT id_contact FROM " + TABLE_PHONE +" WHERE phone LIKE ?", p);
+				while (rows.next()) {
+					id = rows.getInt("id_contact");
+				}
+			}
+		}
+		return id;
 	}
 }
