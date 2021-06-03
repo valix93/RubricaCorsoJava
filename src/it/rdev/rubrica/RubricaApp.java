@@ -24,7 +24,7 @@ public class RubricaApp {
 		String email = nome+cognome+"@gmail.com";
 		emails.add(email);
 		phones.add("3333333333");
-		creaNuovoContatto(nome, cognome, emails, phones);
+		creaNuovoContatto(costruisciContatto(nome, cognome, emails, phones));
 		
 		emails.removeAll(emails);
 		phones.removeAll(phones);
@@ -33,11 +33,28 @@ public class RubricaApp {
 		email = nome+cognome+"@gmail.com";
 		emails.add(email);
 		phones.add("320320320320");
-		creaNuovoContatto(nome, cognome, emails, phones);
-		//cancellaContatto(nome, cognome, emails, phones);
+		creaNuovoContatto(costruisciContatto(nome, cognome, emails, phones));
+		cancellaContatto(costruisciContatto(nome, cognome, emails, phones));
 		if (persistenceType.equals("RDBMS")) {
 			new AppFrame().setVisible(true);
 		}
+	}
+	
+	public static Contact costruisciContatto(String nome, String cognome, Set<String> emails, Set<String> phones){
+		Contact contatto = new Contact();
+		contatto.setName(nome);
+		contatto.setSurname(cognome);
+		contatto.setEmails(emails);
+		contatto.setPhoneNumbers(phones);
+		return contatto;
+	}
+
+	public static void creaNuovoContatto (Contact contatto){
+		rb.addContact(contatto);
+	}
+	
+	public static void cancellaContatto(Contact contatto) {
+		rb.removeContactByEmails(contatto);
 	}
 	
 
@@ -63,22 +80,4 @@ public class RubricaApp {
 		rb.addContact(contatto);
 	}*/
 	
-	public static void creaNuovoContatto(String nome, String cognome, Set<String> emails, Set<String> phones) {
-		Contact contatto = new Contact();
-		contatto.setName(nome);
-		contatto.setSurname(cognome);
-		contatto.setEmails(emails);
-		contatto.setPhoneNumbers(phones);
-		rb.addContact(contatto);
-	}
-	
-	public static void cancellaContatto(String nome, String cognome, Set<String> emails, Set<String> phones) {
-		Contact contatto = new Contact();
-		contatto.setName(nome);
-		contatto.setSurname(cognome);
-		contatto.setEmails(emails);
-		contatto.setPhoneNumbers(phones);
-		contatto.getEmails().size();
-		rb.removeContactByEmails(contatto);
-	}
 }
